@@ -2,7 +2,7 @@
 - 👀 I’m interested in game development
 - 🌱 I’m currently learning Godot and Unity development
 - 📫 How to reach me marc-antoine_renaud@hotmail.com
-- 📄 You can also check out my portfolio! marksfine.site
+- 📄 You can also check out my portfolio! www.marksfine.site
 
 <!---
 Learz/Learz is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
