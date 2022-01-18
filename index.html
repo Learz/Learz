@@ -1,77 +1,272 @@
 <!DOCTYPE HTML>
 <!--
-	Phantom by HTML5 UP
+	Astral by HTML5 UP
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
 	<head>
-		<title>ICT Demo Lesson</title>
+		<title>Mark's Fine Portfolio</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/flag-icon.css">
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-KBZHLX6ZJZ"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-KBZHLX6ZJZ');
+		</script>
 	</head>
 	<body class="is-preload">
-		<!-- Wrapper -->
+
+		<!-- Wrapper-->
 			<div id="wrapper">
 
-				<!-- Header -->
-					<header id="header">
-						<div class="inner">
-
-							
-
-						</div>
-					</header>
+				<!-- Nav -->
+					<nav id="nav">
+						<a href="#" class="icon solid fa-home"><span>Home</span></a>
+						<a href="#work" class="icon solid fa-folder"><span>Work</span></a>
+						<a href="#resume" class="icon solid fa-file-alt"><span>Resume</span></a>
+						<a href="mailto:marc-antoine_renaud@hotmail.com" class="icon solid fa-at"><span>E-mail</span></a>
+						<a href="https://github.com/Learz" class="icon brands fa-github"><span>Github</span></a>
+					</nav>
 
 				<!-- Main -->
 					<div id="main">
-						<div class="inner">
-							<header>
-								<h1>marksfine.site</h1>
-								<p>Welcome to your first game development lesson!</br>
-								Here is what you will need for today's class.</p>
-							</header>
-							<section class="tiles">
-								<article class="style1">
-									<span class="image">
-										<img src="images/pic01.jpg" alt="" />
-									</span>
-									<a href="https://gdevelop-app.com/" target=”_blank”>
-										<h2>GDevelop</h2>
-										<div class="content">
-											<p>This is the program that we will use to make games.</p>
+
+						<!-- Me -->
+							<article id="home" class="panel intro">
+								<header>
+									<h1>Marc-Antoine Renaud</h1>
+									<p>Programmer-Analyst</p>
+									<p>Game Developer</p>
+									<p><span title="French" class="flag-icon flag-icon-fra"></span> <span title="English" class="flag-icon flag-icon-usa"></span> <span title="Japanese" class="flag-icon flag-icon-jpn"></span>‌</p>
+									<a href="mailto:marc-antoine_renaud@hotmail.com"><button class="large contact">Contact Me</button></a>
+								</header>
+								<a href="#work" class="jumplink pic">
+									<span class="arrow icon solid fa-chevron-right"><span>See my work</span></span>
+									<img class="centered" src="images/me.jpg" alt="" />
+								</a>
+							</article>
+
+						<!-- Work -->
+							<article id="work" class="panel">
+								<header>
+									<h2>Work</h2>
+								</header>
+								<p>
+									Game development being a hobby of mine allowed me to experiment with many different game genres on different platforms.
+									Here's a quick preview of projects I have worked on.
+								</p>
+								<section>
+									<div class="row">
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://eddbag.itch.io/a-tiny-step-for-mankind" target=”_blank” class="image fit">
+													<div class="indicator icon solid fa-link"></div>
+													<img src="images/ATSFM.jpg" alt="">
+													<h3>ATSFM</h3>
+													<p>Local multiplayer party game</p>
+												</a>
+											</div>
 										</div>
-									</a>
-								</article>
-								<!--
-								<article class="style2">
-									<span class="image">
-										<img src="images/pic02.jpg" alt="" />
-									</span>
-									<a href="Lesson.zip" target=”_blank”>
-										<h2>Project files</h2>
-										<div class="content">
-											<p>These are the files that we will need for today's game.</p>
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://github.com/Learz/Todisoiavm" target=”_blank” class="image fit">
+													<div class="indicator icon brands fa-github"></div>
+													<img src="images/TODISOIAVM.jpg" alt="">
+													<h3>TODISOIAVM</h3>
+													<p>Procedurally generated city walking simulator</p>
+												</a>
+											</div>
 										</div>
-									</a>
-								</article>
-								-->
-								<article class="style3">
-									<span class="image">
-										<img src="images/pic03.jpg" alt="" />
-									</span>
-									<a href="Instructions.pdf" target=”_blank”>
-										<h2>Instructions</h2>
-										<div class="content">
-											<p>These are the detailed instructions to make today's game.</p>
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://github.com/Learz/DoorStop" target=”_blank” class="image fit">
+													<div class="indicator icon brands fa-github"></div>
+													<img src="images/Doorstop.jpg" alt="">
+													<h3>Doorstop</h3>
+													<p>Mobile flick-based minigame collection</p>
+												</a>
+											</div>
 										</div>
-									</a>
-								</article>
-							</section>
-						</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://github.com/Learz/FineDrive" target=”_blank” class="image fit">
+													<div class="indicator icon brands fa-github"></div>
+													<img src="images/FineDrive.jpg" alt="">
+													<h3>FineDrive</h3>
+													<p>Open world driving adventure game</p>
+												</a>
+											</div>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://github.com/Learz/FineClump" target=”_blank” class="image fit">
+													<div class="indicator icon brands fa-github"></div>
+													<img src="images/NotKatamari.jpg" alt="">
+													<h3>FineClump</h3>
+													<p>Study of the mechanics of the katamari game series</p>
+												</a>
+											</div>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://github.com/Learz/FineMaze" target=”_blank” class="image fit">
+													<div class="indicator icon brands fa-github"></div>
+													<img src="images/FineMaze.jpg" alt="">
+													<h3>FineMaze</h3>
+													<p>Proceduraly generated maze game for mobile</p>
+												</a>
+											</div>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://github.com/Learz/BtM" target=”_blank” class="image fit">
+													<div class="indicator icon brands fa-github"></div>
+													<img src="images/BtM.jpg" alt="">
+													<h3>BtM</h3>
+													<p>Social simulation RPG with GPT-3 based dialogue</p>
+												</a>
+											</div>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://learz.itch.io/between-the-mountains-vn/download/hjOu9nyhVkG36qmjTtrejqUyAWM3A_M9SHL0uG3F" target=”_blank” class="image fit">
+													<div class="indicator icon solid fa-download"></div>
+													<img src="images/BtMVN.jpg" alt="">
+													<h3>BtM Thesis</h3>
+													<p>University thesis for BtM made as a visual novel</p>
+												</a>
+											</div>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://learz.itch.io/ugetsu-monogatari/download/MOuahSCrZOnCd4ZsPGky3y3CI3fuYRHSVt5CGeav" target=”_blank” class="image fit">
+													<div class="indicator icon solid fa-download"></div>
+													<img src="images/ugetsu.jpg" alt="">
+													<h3>Ugetsu Monogatari</h3>
+													<p>First person adaptation of an old japanese tale</p>
+												</a>
+											</div>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://www.lexaloffle.com/bbs/?tid=3465" target=”_blank” class="image fit">
+													<div class="indicator icon solid fa-link"></div>
+													<img src="images/SuperComboLover.jpg" alt="">
+													<h3>Super Combo Lover</h3>
+													<p>Combo based speed dating</p>
+												</a>
+											</div>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://www.lexaloffle.com/bbs/?tid=2122" target=”_blank” class="image fit">
+													<div class="indicator icon solid fa-link"></div>
+													<img src="images/EndlessTrain.jpg" alt="">
+													<h3>Endless Train</h3>
+													<p>Proceduraly generated 2D walking simulator</p>
+												</a>
+											</div>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<div class="card">
+												<a href="https://www.lexaloffle.com/bbs/?tid=28955" target=”_blank” class="image fit">
+													<div class="indicator icon solid fa-link"></div>
+													<img src="images/exatopia.jpg" alt="">
+													<h3>Exatopia Adventures</h3>
+													<p>Retro Action RPG</p>
+												</a>
+											</div>
+										</div>
+									</div>
+								</section>
+							</article>
+						<!-- Resume -->
+							<article id="resume" class="panel">
+								<a id="resumeBtn"" href="Resume.pdf" target=”_blank”><button class="centered large">Download full CV (.pdf)</button></a>
+								<header>
+									<h2>Marc-Antoine Renaud</h2>
+									<table>
+										<tr>
+											<td>
+												<a href="mailto:marc-antoine_renaud@hotmail.com"><h3><span class="icon solid fa-at"></span> marc-antoine_renaud@hotmail.com</h3></a>
+											</td>
+											<td>
+												<h3>080 3129 2083 <span class="icon solid fa-mobile-alt"></span></h3>
+											</td>
+										</tr>
+									</table>
+								</header>
+								<table class="default">
+									<tr>
+										<td>
+											<h3>Education</h3>
+											<h4>Minor in Video Games Studies</h4>
+											<h5>University of Montreal</h5>
+											<h4>Major in Japanese Studies</h4>
+											<h5>University of Montreal</h5>
+											<h4>Technical Degree in Computer Science</h4>
+											<h5>Cégep de Drummondville</h5>
+
+											<h3>Work Experience</h3>
+											<h4>Cashier</h4>
+											<h5>Big A</h5>
+											<h4>Team Leader</h4>
+											<h5>Dollarama</h5>
+											<h4>Project Coordinator</h4>
+											<h5>Youth Fusion</h5>
+											<h4>Programmer-Analyst</h4>
+											<h5>NMédia Solutions</h5>
+										</td>
+										<td>
+											<h3>Skills</h3>
+											<span class="span-box">C#</span> <span class="span-box">Javascript</span> <span class="span-box">LAMP</span> 
+											<span class="span-box">Blender</span> <span class="span-box">Unity</span> <span class="span-box">Unreal&nbspEngine</span> 
+											<span class="span-box">Godot</span> <span class="span-box">Adobe&nbspSuite</span>
+											
+											<h3>Personal Projects</h3>
+											<h4>TODISOIAVM (Godot) (2020)</h4>
+											<h4>A Tiny Step For Mankind (Unity) (2020)</h4>
+											<h4>Ugetsu Monogatari (Unreal Engine) (2017)</h4>
+											<h4>Misc PICO8 games</h4>
+											<h5>
+												Walking Simulator (Endless Train)<br>
+												Top-down RPG (Exatopia Adventures)<br>
+												Super Combo Lover (Game jam entry)
+											</h5>
+
+											<h3>Certificates</h3>
+											<h4>JLPT N2</h4>
+											
+											<h3>Languages</h3>
+											<span class="span-box">French</span> <span class="span-box">English</span> <span class="span-box">Japanese</span>
+										</td>
+									</tr>
+								</table>
+								<h5>
+									This is a preview of my resume. For more information, please download the <a href="Resume.pdf">full resume</a>.
+								</h5>
+							</article>
+
 					</div>
+
+				<!-- Footer -->
+					<div id="footer">
+						<ul class="copyright">
+							<li>&copy; Marc-Antoine Renaud</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</div>
+
+			</div>
 
 		<!-- Scripts -->
 			<script src="assets/js/jquery.min.js"></script>
