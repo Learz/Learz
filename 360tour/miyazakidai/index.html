@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Miyazakidai Tour</title>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
+  <style>
+    @-ms-viewport {
+      width: device-width;
+    }
+  </style>
+  <link rel="stylesheet" href="vendor/reset.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="multiple-scenes ">
+
+  <div id="pano"></div>
+
+  <div id="sceneList">
+    <ul class="scenes">
+
+      <a href="javascript:void(0)" class="scene" data-id="0-entrance">
+        <li class="text">Entrance</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="1-entrance-middle">
+        <li class="text">Entrance Middle</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="2-living-entrance">
+        <li class="text">Living Entrance</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="3-living-middle">
+        <li class="text">Living Middle</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="4-office">
+        <li class="text">Office</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="5-office-seat">
+        <li class="text">Office Seat</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="6-living-sofa">
+        <li class="text">Living Sofa</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="7-living-table">
+        <li class="text">Living Table</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="8-living-kitchen">
+        <li class="text">Living Kitchen</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="9-kitchen-entrance">
+        <li class="text">Kitchen Entrance</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="10-kitchen">
+        <li class="text">Kitchen</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="11-bedroom-entrance">
+        <li class="text">Bedroom Entrance</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="12-bedroom-desk">
+        <li class="text">Bedroom Desk</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="13-bedroom-bed">
+        <li class="text">Bedroom Bed</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="14-bedroom-window">
+        <li class="text">Bedroom Window</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="15-bedroom-outside">
+        <li class="text">Bedroom Outside</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="16-bathroom-entrance">
+        <li class="text">Bathroom Entrance</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="17-bathroom-bath">
+        <li class="text">Bathroom Bath</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="18-bathroom-toilet">
+        <li class="text">Bathroom Toilet</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="19-balcony">
+        <li class="text">Balcony</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="20-balcony-edge">
+        <li class="text">Balcony Edge</li>
+      </a>
+
+      <a href="javascript:void(0)" class="scene" data-id="21-balcony-roof">
+        <li class="text">Balcony Roof</li>
+      </a>
+
+    </ul>
+  </div>
+
+  <div id="titleBar">
+    <h1 class="sceneName"></h1>
+  </div>
+
+  <a href="javascript:void(0)" id="autorotateToggle">
+    <img class="icon off" src="img/play.png">
+    <img class="icon on" src="img/pause.png">
+  </a>
+
+  <a href="javascript:void(0)" id="fullscreenToggle">
+    <img class="icon off" src="img/fullscreen.png">
+    <img class="icon on" src="img/windowed.png">
+  </a>
+
+  <a href="javascript:void(0)" id="sceneListToggle">
+    <img class="icon off" src="img/expand.png">
+    <img class="icon on" src="img/collapse.png">
+  </a>
+
+  <a href="javascript:void(0)" id="viewUp" class="viewControlButton viewControlButton-1">
+    <img class="icon" src="img/up.png">
+  </a>
+  <a href="javascript:void(0)" id="viewDown" class="viewControlButton viewControlButton-2">
+    <img class="icon" src="img/down.png">
+  </a>
+  <a href="javascript:void(0)" id="viewLeft" class="viewControlButton viewControlButton-3">
+    <img class="icon" src="img/left.png">
+  </a>
+  <a href="javascript:void(0)" id="viewRight" class="viewControlButton viewControlButton-4">
+    <img class="icon" src="img/right.png">
+  </a>
+  <a href="javascript:void(0)" id="viewIn" class="viewControlButton viewControlButton-5">
+    <img class="icon" src="img/plus.png">
+  </a>
+  <a href="javascript:void(0)" id="viewOut" class="viewControlButton viewControlButton-6">
+    <img class="icon" src="img/minus.png">
+  </a>
+
+  <script src="vendor/screenfull.min.js"></script>
+  <script src="vendor/bowser.min.js"></script>
+  <script src="vendor/marzipano.js"></script>
+
+  <script src="data.js"></script>
+  <script src="index.js"></script>
+
+</body>
+
+</html>
