@@ -33,7 +33,7 @@ var APP_DATA = {
           "yaw": -0.09469980921307553,
           "pitch": 0.5080682940132526,
           "rotation": 6.283185307179586,
-          "target": "0-entrance"
+          "target": "2-living-entrance"
         },
         {
           "yaw": -0.1004330033690195,
