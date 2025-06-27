@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Run with python -m http.server 8000 -->
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ilimi Language Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Kiwi+Maru&family=Noto+Sans+JP:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif+JP:wght@200..900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+  <script src="main.js"></script>
+</head>
+
+<body>
+  <h1>Ilimi Language Overview</h1>
+
+  <p class="intro">
+    <strong>Ilimi</strong> is a constructed language where words themselves contain their own definition.
+    <br /><br />
+    Each letter defines a core concept, such as self (a), relation (e), thought (i), or world (o).
+    <br /><br />
+    From these letters, consonant and vowel can be combined to form an abstract concept.
+    <br />
+    For example, the syllable "mi" contains "m" (change) and "i" (thought), resulting in the concept of realization
+    (learning).
+    <br /><br />
+    These syllables can then be combined to create words with more specific meanings.
+    <br />
+    For example, "ba", which defines the concept of "individual", can be combined with "mi" (learning) to form "bami",
+    meaning "student" (learning individual).
+    <br /><br />
+    The goal of Ilimi is to create a language that is easy to learn and memorize, as you can understand new words just
+    by looking at their parts.
+    <br /><br />
+    <strong>Ilimi</strong> itself embodies the meaning of thought (i), intuition (li), and learning (mi).
+    <br /><br />
+    There is still much to explore in this language, and it is a work in progress. Letter and syllables meanings are
+    still being refined, and entirely new letters could be introduced in the future.
+    <br />
+    If you have suggestions or ideas for new words, please feel free to send me your creations by using the "Export
+    Vocabulary to CSV" feature!
+  </p>
+
+  <h2>Base Meaning Table</h2>
+  <table id="meaning-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>a<span class="meaning-def">(self)</span></th>
+        <th>e<span class="meaning-def">(relation)</span></th>
+        <th>i<span class="meaning-def">(thought)</span></th>
+        <th>o<span class="meaning-def">(world)</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th><span data-tooltip="Base vowel"></span></th>
+        <td>a</td>
+        <td>e</td>
+        <td>i</td>
+        <td>o</td>
+      </tr>
+      <tr>
+        <th><span class="consonant">m</span><br /><span class="meaning-def">(change)</span></th>
+        <td>ma</td>
+        <td>me</td>
+        <td>mi</td>
+        <td>mo</td>
+      </tr>
+      <tr>
+        <th><span class="consonant">s</span><br /><span class="meaning-def">(structure)</span></th>
+        <td>sa</td>
+        <td>se</td>
+        <td>si</td>
+        <td>so</td>
+      </tr>
+      <tr>
+        <th><span class="consonant">t</span><br /><span class="meaning-def">(time)</span></th>
+        <td>ta</td>
+        <td>te</td>
+        <td>ti</td>
+        <td>to</td>
+      </tr>
+      <tr>
+        <th><span class="consonant">d</span><br /><span class="meaning-def">(knowledge)</span></th>
+        <td>da</td>
+        <td>de</td>
+        <td>di</td>
+        <td>do</td>
+      </tr>
+      <tr>
+        <th><span class="consonant">b</span><br /><span class="meaning-def">(being)</span></th>
+        <td>ba</td>
+        <td>be</td>
+        <td>bi</td>
+        <td>bo</td>
+      </tr>
+      <tr>
+        <th><span class="consonant">p</span><br /><span class="meaning-def">(action)</span></th>
+        <td>pa</td>
+        <td>pe</td>
+        <td>pi</td>
+        <td>po</td>
+      </tr>
+      <tr>
+        <th><span class="consonant">l</span><br /><span class="meaning-def">(emotion)</span></th>
+        <td>la</td>
+        <td>le</td>
+        <td>li</td>
+        <td>lo</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div id="syllable-words-list" style="margin-bottom:2rem;"></div>
+
+  <h2>Vocabulary</h2>
+  <!-- New: Add Word Section as CTA -->
+  <div id="add-word-section" class="add-word-fixed add-word-minimized">
+    <button id="add-word-cta" title="Add a new word" aria-label="Add a new word">
+      <span class="add-word-cta-plus">+</span>
+    </button>
+    <div id="add-word-panel">
+      <div id="add-word-header">
+        <h3>Add a New Word</h3>
+        <button id="add-word-close" title="Close" aria-label="Close">&times;</button>
+      </div>
+      <div id="add-word-content">
+        <form id="add-word-form" autocomplete="off">
+          <div class="add-word-input-col">
+            <label for="new-word">Word:</label>
+            <input id="new-word" name="new-word" type="text" maxlength="16" required />
+            <div id="syllable-annotation"></div>
+          </div>
+          <div class="add-word-input-col">
+            <label for="new-meaning">Meaning:</label>
+            <input id="new-meaning" name="new-meaning" type="text" maxlength="80" required />
+          </div>
+          <div class="add-word-btn-col">
+            <button id="add-word-btn" type="submit">Add Word</button>
+          </div>
+        </form>
+        <div id="add-word-message"></div>
+      </div>
+    </div>
+  </div>
+  <div class="csv-controls">
+    <label for="import-csv-input" class="import-csv-label">Load from CSV
+      <input id="import-csv-input" type="file" accept=".csv,text/csv" />
+    </label>
+    <button id="export-csv-btn">Export Vocabulary to CSV</button>
+    <span id="export-csv-msg"></span>
+  </div>
+  </script>
+  <div class="vocab-list"></div>
+</body>
+
+</html>

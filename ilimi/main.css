@@ -1,0 +1,522 @@
+/* --- Add Word CTA Button and Panel --- */
+#add-word-section {
+    position: fixed;
+    bottom: 2.2rem;
+    right: 2.2rem;
+    z-index: 10001;
+    max-width: 420px;
+    min-width: 70px;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    transition: none;
+}
+
+#add-word-cta {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #4b0082;
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 8px rgba(80, 40, 120, 0.18);
+    font-size: 2.5em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.18s, box-shadow 0.18s;
+    position: relative;
+    outline: none;
+}
+
+#add-word-cta:hover,
+#add-word-cta:focus {
+    background: #37105c;
+    box-shadow: 0 4px 16px rgba(80, 40, 120, 0.23);
+}
+
+.add-word-cta-plus {
+    font-size: 2em;
+    margin-top: -0.15em;
+}
+
+#add-word-panel {
+    display: none;
+}
+
+#add-word-section:not(.add-word-minimized) #add-word-panel {
+    display: block;
+    background: #f3f0ff;
+    border: 1px solid #e6e6fa;
+    border-radius: 7px;
+    padding: 0.7em 1em 0.7em 1em;
+    margin-top: 0.5em;
+    animation: fadeInPanel 0.18s;
+}
+
+@keyframes fadeInPanel {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+#add-word-section.add-word-minimized #add-word-cta {
+    display: flex;
+}
+
+#add-word-section:not(.add-word-minimized) #add-word-cta {
+    display: none;
+}
+
+#add-word-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.2em;
+    padding-bottom: 0.1em;
+    border-bottom: 1px solid #e6e6fa;
+}
+
+#add-word-header h3 {
+    margin: 0;
+    color: #4b0082;
+    font-size: 1.1em;
+}
+
+#add-word-close {
+    background: none;
+    border: none;
+    font-size: 1.7em;
+    color: #4b0082;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 0.2em;
+    margin-left: 0.5em;
+    transition: color 0.18s;
+}
+
+#add-word-close:hover,
+#add-word-close:focus {
+    color: #b00;
+}
+
+#Add Word Panel Layout and Form .add-word-input-col {
+    flex: 1 1 220px;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 0.5em;
+}
+
+.add-word-btn-col {
+    flex: 0 0 auto;
+    align-self: flex-end;
+}
+
+#add-word-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em 1.5em;
+    align-items: flex-start;
+}
+
+#add-word-section #syllable-annotation {
+    font-size: 0.98em;
+    color: #4b0082;
+    min-height: 1.7em;
+    margin-top: 0.1em;
+}
+
+#add-word-section input[type="text"] {
+    width: 100%;
+    padding: 0.4em 1.2em 0.4em 0.7em;
+    box-sizing: border-box;
+    font-size: 1em;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    margin-bottom: 0.3em;
+    background: #fff;
+    color: #222;
+    transition: border-color 0.2s;
+}
+
+#add-word-section input[type="text"]:focus {
+    border-color: #4b0082;
+    outline: none;
+}
+
+#add-word-btn {
+    background: #4b0082;
+    color: #fff;
+    font-weight: bold;
+    padding: 0.5em 1.2em;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#add-word-btn:hover,
+#export-csv-btn:hover,
+#open-edit-csv-btn:hover,
+#save-csv-file-btn:hover {
+    background: #37105c;
+}
+
+.csv-controls {
+    margin-bottom: 1.2em;
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.import-csv-label {
+    margin: 0 0.5em 0 0.5em;
+    font-size: 1em;
+    cursor: pointer;
+    background: #e6e6fa;
+    padding: 0.45em 1.1em;
+    border-radius: 4px;
+    border: 1px solid #bdbdfc;
+    color: #4b0082;
+    font-weight: bold;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+}
+
+.import-csv-label input[type="file"] {
+    display: none;
+}
+
+/* ilimi_language.css - All styles for Ilimi Language Site */
+
+body {
+    font-family: "Noto Sans Mono",
+        monospace;
+    background-color: #f6f8fa;
+    color: #333;
+    padding: 0.5rem;
+}
+
+h1,
+h2 {
+    color: #4b0082;
+}
+
+table {
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+th,
+td {
+    border: 1px solid #aaa;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+th {
+    background-color: #e6e6fa;
+}
+
+.vocab-list span {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dotted #666;
+}
+
+.vocab-list span:hover::after {
+    content: none;
+}
+
+.floating-tooltip {
+    position: fixed;
+    z-index: 10000;
+    background: #222;
+    color: #fff;
+    padding: 0.4rem 0.6rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    font-size: 14px;
+    left: 0;
+    top: 0;
+}
+
+.floating-tooltip.visible {
+    opacity: 0.95;
+}
+
+.table-meaning {
+    display: block;
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 0.15em;
+    font-style: italic;
+    font-weight: normal;
+    white-space: normal;
+    line-height: 1.2;
+}
+
+.table-syllable {
+    cursor: pointer;
+    color: #4b0082;
+    font-weight: bold;
+}
+
+#syllable-words-list {
+    margin-bottom: 2rem;
+    max-height: 40rem;
+    overflow-y: auto;
+}
+
+#syllable-words-list strong {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+#syllable-words-list ul {
+    margin: 0.5em 0 0 1.5em;
+    padding: 0;
+    list-style-type: disc;
+}
+
+#syllable-words-list li {
+    margin-bottom: 0.5rem;
+}
+
+.add-word-fixed {
+    position: fixed;
+    bottom: 2.2rem;
+    right: 2.2rem;
+    z-index: 10001;
+    background: #f3f0ff;
+    border: 1px solid #e6e6fa;
+    border-radius: 7px;
+    max-width: 420px;
+    min-width: 270px;
+    box-shadow: 0 4px 16px rgba(80, 40, 120, 0.13);
+    padding: 0.7em 1em 0.7em 1em;
+    transition: box-shadow 0.2s, background 0.2s;
+}
+
+.add-word-fixed.add-word-minimized #add-word-content {
+    display: none !important;
+}
+
+.add-word-fixed.add-word-minimized #add-word-toggle {
+    transform: rotate(180deg);
+}
+
+.add-word-fixed:not(.add-word-minimized) #add-word-content {
+    display: block !important;
+}
+
+.add-word-fixed #add-word-header {
+    margin-bottom: 0.2em;
+    padding-bottom: 0.1em;
+    border-bottom: 1px solid #e6e6fa;
+}
+
+/* Buttons and Inputs */
+button,
+input[type="submit"] {
+    font-family: inherit;
+}
+
+#export-csv-btn,
+#open-edit-csv-btn,
+#save-csv-file-btn {
+    background: #4b0082;
+    color: #fff;
+    font-weight: bold;
+    padding: 0.45em 1.1em;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+#save-csv-file-btn {
+    background: #228b22;
+    margin-left: 0.7em;
+    display: none;
+}
+
+label[for="import-csv-input"] {
+    margin: 0 0.5em 0 0.5em;
+    font-size: 1em;
+    cursor: pointer;
+    background: #e6e6fa;
+    padding: 0.45em 1.1em;
+    border-radius: 4px;
+    border: 1px solid #bdbdfc;
+    color: #4b0082;
+    font-weight: bold;
+}
+
+#add-word-btn {
+    background: #4b0082;
+    color: #fff;
+    font-weight: bold;
+    padding: 0.5em 1.2em;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+#add-word-section input[type="text"] {
+    width: 100%;
+    padding: 0.4em 1.2em 0.4em 0.7em;
+    box-sizing: border-box;
+    font-size: 1em;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    margin-bottom: 0.3em;
+}
+
+#add-word-section label {
+    font-weight: bold;
+}
+
+#add-word-message,
+#export-csv-msg {
+    margin-top: 0.7em;
+    font-size: 0.98em;
+    color: #228b22;
+}
+
+.syllable-badge {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    display: inline-block;
+    background: #b6f5b6;
+    color: #228b22;
+    font-size: 0.85em;
+    font-weight: bold;
+    border-radius: 1em;
+    padding: 0.1em 0.7em 0.1em 0.7em;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(34, 139, 34, 0.13);
+    border: 1.5px solid #b6f5b6;
+    pointer-events: none;
+}
+
+.table-cell-clickable {
+    position: relative;
+    cursor: pointer;
+}
+
+.unused-word {
+    cursor: pointer;
+    text-decoration: underline dotted #4b0082;
+}
+
+#close-syllable-list {
+    float: right;
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    color: #4b0082;
+}
+
+.vocab-list {
+    margin-bottom: 2em;
+}
+
+.vocab-list>div {
+    flex: 1 1 0;
+    min-width: 170px;
+}
+
+/* Make .vocab-list scrollable horizontally if needed */
+.vocab-list {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.vocab-list strong {
+    color: #4b0082;
+    font-size: 1.1em;
+}
+
+.vocab-list span {
+    color: #4b0082;
+}
+
+.vocab-list p {
+    margin: 0.2em 0;
+}
+
+.vocab-list .word {
+    font-weight: bold;
+}
+
+@media (max-width: 700px) {
+    .table-meaning {
+        font-size: 0.60em;
+    }
+
+    #add-word-section {
+        right: 0.5rem;
+        left: 0.5rem;
+        min-width: 0;
+        max-width: 98vw;
+    }
+
+    #add-word-cta {
+        width: 54px;
+        height: 54px;
+        font-size: 2em;
+    }
+
+    .add-word-fixed {
+        right: 0.5rem;
+        left: 0.5rem;
+        min-width: 0;
+        max-width: 98vw;
+    }
+
+    .vocab-list>div {
+        min-width: 100px;
+        font-size: 0.97em;
+    }
+
+    .vocab-list {
+        gap: 0.7em;
+    }
+
+    .floating-tooltip {
+        font-size: 1em;
+        max-width: 95vw;
+        word-break: break-word;
+        padding: 0.5em 0.7em;
+    }
+
+    .meaning-def {
+        display: none;
+    }
+
+    .syllable-badge {
+        display: none !important;
+    }
+}
