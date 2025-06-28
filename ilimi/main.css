@@ -31,15 +31,17 @@
     outline: none;
 }
 
+#add-word-cta .material-symbols-outlined {
+    font-size: 2.5rem;
+    line-height: 1;
+    /* Optionally adjust vertical alignment if needed */
+    vertical-align: middle;
+}
+
 #add-word-cta:hover,
 #add-word-cta:focus {
     background: #37105c;
     box-shadow: 0 4px 16px rgba(80, 40, 120, 0.23);
-}
-
-.add-word-cta-plus {
-    font-size: 2em;
-    margin-top: -0.15em;
 }
 
 #add-word-panel {
@@ -232,7 +234,7 @@ th {
     background-color: #e6e6fa;
 }
 
-.vocab-list span {
+.vocab-list .word span {
     position: relative;
     cursor: help;
     border-bottom: 1px dotted #666;
@@ -465,10 +467,83 @@ label[for="import-csv-input"] {
 
 .vocab-list p {
     margin: 0.2em 0;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    position: relative;
 }
 
 .vocab-list .word {
     font-weight: bold;
+    align-self: flex-start;
+    min-width: 0;
+}
+
+.vocab-list .spacer {
+    flex: 1 1 auto;
+    height: 1px;
+    background: linear-gradient(to right, #bbb, #eee 70%);
+    margin: 0 0.5em;
+}
+
+.vocab-list .meaning {
+    text-align: end;
+}
+
+/* --- Vocabulary List Layout --- */
+.vocab-flex {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5em;
+}
+
+.vocab-group {
+    flex: 1 1 0;
+}
+
+.vocab-group-title {
+    color: #4b0082;
+    font-size: 1.1em;
+}
+
+.vocab-group-meaning {
+    color: #666;
+    font-size: 0.98em;
+    margin-left: 0.4em;
+}
+
+.vocab-none {
+    color: #aaa;
+}
+
+.delete-word-btn {
+    display: inline;
+    margin-left: 0.5em;
+    color: #b00;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    vertical-align: middle;
+    padding: 0;
+    align-items: center;
+}
+
+.delete-word-btn .material-symbols-outlined {
+    font-size: 1.2em;
+    vertical-align: middle;
+}
+
+.vocab-list p .delete-word-btn {
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s;
+}
+
+.vocab-list p:hover .delete-word-btn {
+    pointer-events: auto;
+    opacity: 1;
+    transition: opacity 0.18s;
 }
 
 @media (max-width: 700px) {
@@ -478,26 +553,17 @@ label[for="import-csv-input"] {
 
     #add-word-section {
         right: 0.5rem;
-        left: 0.5rem;
         min-width: 0;
         max-width: 98vw;
     }
 
-    #add-word-cta {
-        width: 54px;
-        height: 54px;
-        font-size: 2em;
-    }
-
     .add-word-fixed {
         right: 0.5rem;
-        left: 0.5rem;
         min-width: 0;
         max-width: 98vw;
     }
 
     .vocab-list>div {
-        min-width: 100px;
         font-size: 0.97em;
     }
 
@@ -512,8 +578,13 @@ label[for="import-csv-input"] {
         padding: 0.5em 0.7em;
     }
 
-    .meaning-def {
-        display: none;
+    .consonant-meaning-def {
+        display: inline-block;
+        writing-mode: vertical-lr;
+        text-orientation: mixed;
+        margin-left: 0.2em;
+        font-size: 0.85em;
+        color: #666;
     }
 
     .syllable-badge {

@@ -1,6 +1,21 @@
-// ilimi_language.js
-// All main JS logic for Ilimi Language Site
+import { parseCSV, vocabArrayToCSV } from './csv_utils.js';
 
+// --- Add Word Section Logic ---
+let vocab = [];
+const csvPath = "default_vocab.csv";
+
+// --- Shared constants ---
+const consonants = ['', 'm', 's', 't', 'd', 'b', 'p', 'l'];
+const consonantMeanings = {
+    m: 'change',
+    s: 'structure',
+    t: 'time',
+    d: 'knowledge',
+    b: 'being',
+    p: 'action',
+    l: 'emotion'
+};
+const vowels = ['a', 'e', 'i', 'o'];
 // --- Meanings dictionary ---
 const meanings = {
     a: 'self / identity',
@@ -23,7 +38,7 @@ const meanings = {
     de: 'shared knowledge (teaching)',
     di: 'deep thought (wisdom)',
     do: 'accumulated truth (archive)',
-    ba: 'inner being (individual)',
+    ba: 'inner being (self)',
     be: 'connected being (you)',
     bi: 'conscious life (awareness)',
     bo: 'external life (others)',
@@ -77,34 +92,6 @@ function getSyllableMeaningsList(word) {
     return sylls.map(s => meanings[s] || '?').join('<br/>');
 }
 
-function parseCSV(text) {
-    const lines = text.trim().split(/\r?\n/).filter(line => line.trim() !== '');
-    if (lines.length === 0) {
-        throw new Error('CSV file is empty.');
-    }
-    // Detect header (case-insensitive, must contain both 'word' and 'meaning')
-    let startIdx = 0;
-    const header = lines[0].toLowerCase();
-    if (header.includes('word') && header.includes('meaning')) {
-        startIdx = 1;
-    }
-    const result = [];
-    for (let i = startIdx; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        const [word, ...meaningParts] = line.split(',');
-        if (!word || word.trim() === '') continue;
-        const meaning = meaningParts.join(',').trim();
-        // Optionally allow empty meaning, but skip if both are empty
-        if (word.trim() === '' && meaning === '') continue;
-        result.push({ word: word.trim(), meaning });
-    }
-    if (result.length === 0) {
-        throw new Error('No valid entries found in CSV.');
-    }
-    return result;
-}
-
 // --- Tooltip logic ---
 let tooltip;
 
@@ -145,11 +132,6 @@ function attachTooltipEvents() {
     });
 }
 
-// --- Add Word Section Logic ---
-let addedWords = [];
-let vocabFromCSV = [];
-const csvPath = "default_vocab.csv";
-
 function setupAddWordSection() {
     const newWordInput = document.getElementById('new-word');
     const newMeaningInput = document.getElementById('new-meaning');
@@ -179,22 +161,20 @@ function setupAddWordSection() {
                 return;
             }
             const exists = Array.from(document.querySelectorAll('.vocab-list .word')).some(el => el.textContent.trim().toLowerCase() === word.toLowerCase()) ||
-                addedWords.some(w => w.word.toLowerCase() === word.toLowerCase());
+                vocab.some(w => w.word.toLowerCase() === word.toLowerCase());
             if (exists) {
                 addWordMsg.textContent = 'That word is already in the vocabulary list.';
                 addWordMsg.style.color = '#b00';
                 return;
             }
-            addedWords.push({ word, meaning });
+            vocab.push({ word, meaning });
             renderVocabList();
-            attachSyllableClickEvents();
             // If fileHandle is set, auto-save to file
             if (typeof fileHandle !== 'undefined' && fileHandle) {
                 try {
-                    const allVocab = [...vocabFromCSV, ...addedWords];
                     const seen = new Set();
                     const deduped = [];
-                    for (const entry of allVocab) {
+                    for (const entry of vocab) {
                         const key = (entry.word || '').trim().toLowerCase();
                         if (key && !seen.has(key)) {
                             seen.add(key);
@@ -238,72 +218,24 @@ function showMsg(msg, success) {
     }
 }
 
-function importVocabFromCSVFile(file) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        const text = e.target.result;
-        try {
-            const parsed = parseCSV(text);
-            // Remove from addedWords any that are present in the imported CSV (case-insensitive)
-            const importedWords = new Set(parsed.map(entry => (entry.word || '').trim().toLowerCase()));
-            addedWords = addedWords.filter(entry => !importedWords.has((entry.word || '').trim().toLowerCase()));
-            vocabFromCSV = parsed;
-            renderVocabList();
-            attachSyllableClickEvents();
-            showMsg('Vocabulary loaded from CSV!', true);
-            console.log('CSV import successful:', parsed);
-        } catch (err) {
-            showMsg('Failed to load CSV: ' + err.message, false);
-            console.error('CSV import error:', err);
-        }
-    };
-    reader.readAsText(file);
-}
-
-function exportVocabToCSV() {
-    // Merge and deduplicate by word (case-insensitive, trimmed)
-    const allVocab = [...vocabFromCSV, ...addedWords];
-    const seen = new Set();
-    const deduped = [];
-    for (const entry of allVocab) {
-        const key = (entry.word || '').trim().toLowerCase();
-        if (key && !seen.has(key)) {
-            seen.add(key);
-            deduped.push(entry);
-        }
-    }
-    let csv = 'word,meaning\n';
-    deduped.forEach(entry => {
-        let word = (entry.word || '').replace(/\r?\n/g, ' ').replace(/"/g, '""');
-        let meaning = (entry.meaning || '').replace(/\r?\n/g, ' ').replace(/"/g, '""');
-        if (word.includes(',') || word.includes('"')) {
-            word = '"' + word + '"';
-        }
-        if (meaning.includes(',') || meaning.includes('"')) {
-            meaning = '"' + meaning + '"';
-        }
-        csv += `${word},${meaning}\n`;
-    });
-    // Download CSV
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'ilimi_vocabulary_export.csv';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }, 100);
-}
-
 let fileHandle = null;
 function setupCSVButtons() {
     const exportBtn = document.getElementById('export-csv-btn');
     if (exportBtn) {
         exportBtn.onclick = function () {
-            exportVocabToCSV();
+            // Export vocab to CSV and trigger download
+            const csv = vocabArrayToCSV(vocab);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ilimi_vocabulary_export.csv';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
             showMsg('CSV file exported!', true);
         };
     }
@@ -311,7 +243,26 @@ function setupCSVButtons() {
     if (importInput) {
         importInput.addEventListener('change', function (e) {
             if (importInput.files && importInput.files[0]) {
-                importVocabFromCSVFile(importInput.files[0]);
+                // Import vocab from CSV file
+                const file = importInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const text = e.target.result;
+                    try {
+                        const parsed = parseCSV(text);
+                        vocab = parsed
+                        // Append imported CSV entries to vocab, avoiding duplicates
+                        // const importedWords = new Set(parsed.map(entry => (entry.word || '').trim().toLowerCase()));
+                        // const existingWords = new Set(vocab.map(entry => (entry.word || '').trim().toLowerCase()));
+                        // const newEntries = parsed.filter(entry => !existingWords.has((entry.word || '').trim().toLowerCase()));
+                        // vocab = vocab.concat(newEntries);
+                        renderVocabList();
+                        showMsg('Vocabulary loaded from CSV!', true);
+                    } catch (err) {
+                        showMsg('Failed to load CSV: ' + err.message, false);
+                    }
+                };
+                reader.readAsText(file);
                 importInput.value = '';
             }
         });
@@ -364,12 +315,13 @@ function setupCSVButtons() {
             const file = await handle.getFile();
             const text = await file.text();
             const parsed = parseCSV(text);
-            // Remove from addedWords any that are present in the imported CSV (case-insensitive)
-            const importedWords = new Set(parsed.map(entry => (entry.word || '').trim().toLowerCase()));
-            addedWords = addedWords.filter(entry => !importedWords.has((entry.word || '').trim().toLowerCase()));
-            vocabFromCSV = parsed;
+            vocab = parsed
+            // Append imported CSV entries to vocab, avoiding duplicates
+            // const importedWords = new Set(parsed.map(entry => (entry.word || '').trim().toLowerCase()));
+            // const existingWords = new Set(vocab.map(entry => (entry.word || '').trim().toLowerCase()));
+            // const newEntries = parsed.filter(entry => !existingWords.has((entry.word || '').trim().toLowerCase()));
+            // vocab = vocab.concat(newEntries);
             renderVocabList();
-            attachSyllableClickEvents();
             showMsg('CSV file loaded for editing!', true);
             saveFileBtn.style.display = '';
         } catch (err) {
@@ -383,28 +335,7 @@ function setupCSVButtons() {
             return;
         }
         try {
-            const allVocab = [...vocabFromCSV, ...addedWords];
-            const seen = new Set();
-            const deduped = [];
-            for (const entry of allVocab) {
-                const key = (entry.word || '').trim().toLowerCase();
-                if (key && !seen.has(key)) {
-                    seen.add(key);
-                    deduped.push(entry);
-                }
-            }
-            let csv = 'word,meaning\n';
-            deduped.forEach(entry => {
-                let word = (entry.word || '').replace(/\r?\n/g, ' ').replace(/"/g, '""');
-                let meaning = (entry.meaning || '').replace(/\r?\n/g, ' ').replace(/"/g, '""');
-                if (word.includes(',') || word.includes('"')) {
-                    word = '"' + word + '"';
-                }
-                if (meaning.includes(',') || meaning.includes('"')) {
-                    meaning = '"' + meaning + '"';
-                }
-                csv += `${word},${meaning}\n`;
-            });
+            const csv = vocabArrayToCSV(vocab);
             const writable = await fileHandle.createWritable();
             await writable.write(csv);
             await writable.close();
@@ -415,64 +346,36 @@ function setupCSVButtons() {
     };
 }
 
-function setupAddWordMinimize() {
-    const section = document.getElementById('add-word-section');
-    const toggleBtn = document.getElementById('add-word-toggle');
-    section.classList.add('add-word-minimized');
-    toggleBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        section.classList.toggle('add-word-minimized');
-        if (section.classList.contains('add-word-minimized')) {
-            toggleBtn.innerHTML = '&#x25B2;';
-        } else {
-            toggleBtn.innerHTML = '&#x25BC;';
-        }
-    });
-    document.getElementById('add-word-header').addEventListener('click', function (e) {
-        if (e.target !== toggleBtn) toggleBtn.click();
-    });
-}
-
-// --- Fix: Move syllable badges below words on mobile ---
-(function () {
-    var style = document.createElement('style');
-    style.innerHTML = `@media (max-width: 700px) { .syllable-badge { position: static !important; margin: 0.2em auto 0.1em auto !important; top: auto !important; right: auto !important; } }`;
-    document.head.appendChild(style);
-})();
-
 function renderVocabList() {
     const vocabDiv = document.querySelector('.vocab-list');
-    const consonants = ['m', 's', 't', 'd', 'b', 'p', 'l'];
-    const consonantMeanings = {
-        m: 'change',
-        s: 'structure',
-        t: 'time',
-        d: 'knowledge',
-        b: 'being',
-        p: 'action',
-        l: 'emotion'
-    };
+    // Use shared consonants
+    // Remove '' (empty string) for vocab grouping
+    const groupConsonants = consonants.slice(1);
     const groups = { m: [], s: [], t: [], d: [], b: [], p: [], l: [] };
-    const allVocab = [...vocabFromCSV, ...addedWords];
-    allVocab.forEach(entry => {
+    vocab.forEach((entry, idx) => {
         const match = entry.word.match(/[mstdbpl]/i);
         const key = match ? match[0].toLowerCase() : null;
         if (key && groups[key]) {
-            groups[key].push(entry);
+            groups[key].push({ ...entry, idx });
         }
     });
-    let html = '<div style="display:flex;gap:1.5em;flex-wrap:wrap;">';
-    consonants.forEach(c => {
-        html += `<div style="flex:1 1 0;min-width:170px;">
-            <strong style=\"color:#4b0082;font-size:1.1em;\">${c.toUpperCase()}</strong>
-            <span style=\"color:#666;font-size:0.98em;margin-left:0.4em;\">(${consonantMeanings[c]})</span>
+    let html = '<div class="vocab-flex">';
+    groupConsonants.forEach(c => {
+        html += `<div class="vocab-group">
+            <strong class="vocab-group-title">${c.toUpperCase()}</strong>
+            <span class="vocab-group-meaning">(${consonantMeanings[c]})</span>
             <div>`;
         if (groups[c].length > 0) {
             groups[c].forEach(entry => {
-                html += `<p><span class=\"word\">${entry.word}</span> – ${entry.meaning}</p>`;
+                html += `<p style="display:flex;align-items:center;gap:0.5em;">
+        <span class="word">${entry.word}</span>
+        <span class="spacer"></span>
+        <span class="meaning">${entry.meaning}</span>
+        <button class='delete-word-btn' data-idx='${entry.idx}' title='Delete'><span class='material-symbols-outlined'>delete</span></button>
+    </p>`;
             });
         } else {
-            html += '<p style="color:#aaa;">(none)</p>';
+            html += '<p class="vocab-none">(none)</p>';
         }
         html += '</div></div>';
     });
@@ -481,6 +384,28 @@ function renderVocabList() {
     document.querySelectorAll('.word').forEach(el => {
         el.innerHTML = annotateWord(el.textContent);
     });
+    // Add delete button event listeners
+    document.querySelectorAll('.delete-word-btn').forEach(btn => {
+        btn.addEventListener('click', async function (e) {
+            const idx = parseInt(btn.getAttribute('data-idx'));
+            if (!isNaN(idx)) {
+                vocab.splice(idx, 1);
+                renderVocabList();
+                // Save to file if fileHandle is set (Open/Edit CSV mode)
+                if (typeof fileHandle !== 'undefined' && fileHandle) {
+                    try {
+                        const csv = vocabArrayToCSV(vocab);
+                        const writable = await fileHandle.createWritable();
+                        await writable.write(csv);
+                        await writable.close();
+                        showMsg('Deleted and saved to file!', true);
+                    } catch (err) {
+                        showMsg('Failed to save after delete: ' + err.message, false);
+                    }
+                }
+            }
+        });
+    });
     attachTooltipEvents();
     updateMeaningTable();
 }
@@ -488,33 +413,9 @@ function renderVocabList() {
 function updateMeaningTable() {
     const meaningTable = document.getElementById('meaning-table');
     if (meaningTable) {
-        const consonants = ['', 'm', 's', 't', 'd', 'b', 'p', 'l'];
-        const vowels = ['a', 'e', 'i', 'o'];
+        // Use shared consonants and vowels
         const allSylls = [];
         for (const c of consonants) for (const v of vowels) allSylls.push(c + v);
-        const all2SyllWords = [];
-        for (const s1 of allSylls) {
-            for (const s2 of allSylls) {
-                if (s1.length === 2 && s2.length === 2) {
-                    all2SyllWords.push(s1 + s2);
-                }
-            }
-        }
-        function getAllUsed2SyllWords() {
-            const used = new Set();
-            document.querySelectorAll('.vocab-list .word').forEach(el => {
-                const w = el.textContent.trim().toLowerCase();
-                for (let i = 0; i <= w.length - 4; i++) {
-                    const sub = w.slice(i, i + 4);
-                    if (sub.length === 4) used.add(sub);
-                }
-            });
-            return used;
-        }
-        function getUnusedCount(syllable) {
-            const used2Syll = getAllUsed2SyllWords();
-            return all2SyllWords.filter(w => !used2Syll.has(w) && w.includes(syllable)).length;
-        }
         function getUsedWordCount(syllable) {
             let count = 0;
             document.querySelectorAll('.vocab-list .word').forEach(el => {
@@ -528,34 +429,30 @@ function updateMeaningTable() {
                 const cell = row.cells[i];
                 const text = cell.textContent.trim();
                 if (meanings[text]) {
-                    // Only show used badge (green)
-                    const usedBadge = `<span class="syllable-badge" style="position:absolute;top:6px;right:10px;background:#b6f5b6;color:#228b22;font-size:0.85em;font-weight:bold;border-radius:1em;padding:0.1em 0.7em 0.1em 0.7em;z-index:2;box-shadow:0 2px 8px rgba(34,139,34,0.13);border:1.5px solid #b6f5b6;pointer-events:none;">${getUsedWordCount(text)}</span>`;
-                    cell.style.position = 'relative';
-                    cell.innerHTML = `<div class="table-cell-clickable" data-syllable="${text}" style="position:relative;cursor:pointer;">${usedBadge}<span class="table-syllable" style="color:#4b0082;font-weight:bold;">${text}</span><span class="table-meaning">${meanings[text]}</span></div>`;
+                    const usedBadge = `<span class="syllable-badge">${getUsedWordCount(text)}</span>`;
+                    cell.innerHTML = `<div class="table-cell-clickable" data-syllable="${text}">${usedBadge}<span class="table-syllable"">${text}</span><span class="table-meaning">${meanings[text]}</span></div>`;
+                    // Attach click event directly here
+                    const cellDiv = cell.querySelector('.table-cell-clickable');
+                    if (cellDiv) {
+                        cellDiv.addEventListener('click', function () {
+                            const syllable = this.getAttribute('data-syllable');
+                            const listDiv = document.getElementById('syllable-words-list');
+                            // If already open for this syllable, close it
+                            if (listDiv && listDiv.getAttribute('data-syllable') === syllable && listDiv.innerHTML.trim() !== '') {
+                                listDiv.innerHTML = '';
+                                listDiv.removeAttribute('data-syllable');
+                            } else {
+                                showWordsWithSyllable(syllable);
+                                if (listDiv) listDiv.setAttribute('data-syllable', syllable);
+                            }
+                        });
+                    }
                 } else {
                     cell.style.position = '';
                 }
             }
         }
-        attachSyllableClickEvents();
     }
-}
-
-function attachSyllableClickEvents() {
-    document.querySelectorAll('.table-cell-clickable').forEach(cellDiv => {
-        cellDiv.addEventListener('click', function () {
-            const syllable = this.getAttribute('data-syllable');
-            const listDiv = document.getElementById('syllable-words-list');
-            // If already open for this syllable, close it
-            if (listDiv && listDiv.getAttribute('data-syllable') === syllable && listDiv.innerHTML.trim() !== '') {
-                listDiv.innerHTML = '';
-                listDiv.removeAttribute('data-syllable');
-            } else {
-                showWordsWithSyllable(syllable);
-                if (listDiv) listDiv.setAttribute('data-syllable', syllable);
-            }
-        });
-    });
 }
 
 function highlightSyllableInWordWithTooltips(word, syllable) {
@@ -589,24 +486,23 @@ function highlightSyllableInWordWithTooltips(word, syllable) {
 function showWordsWithSyllable(syllable) {
     const listDiv = document.getElementById('syllable-words-list');
     const matches = [];
-    document.querySelectorAll('.vocab-list p').forEach(p => {
-        const word = p.querySelector('.word').textContent.trim();
+    vocab.forEach(entry => {
+        const word = entry.word.trim();
         if (word.includes(syllable)) {
             const highlighted = highlightSyllableInWordWithTooltips(word, syllable);
-            const def = p.textContent.replace(word, '').replace(/^(	*–	*)/, '– ');
-            matches.push(`<li><span style="font-weight:bold;">${highlighted}</span> ${def}</li>`);
+            matches.push(`<li><span style="font-weight:bold;">${highlighted}</span> – ${entry.meaning}</li>`);
         }
     });
+
+    // Find unused 2-syllable words containing the syllable
     const used2Syll = new Set();
-    document.querySelectorAll('.vocab-list .word').forEach(el => {
-        const w = el.textContent.trim().toLowerCase();
+    vocab.forEach(entry => {
+        const w = entry.word.trim().toLowerCase();
         for (let i = 0; i <= w.length - 4; i++) {
             const sub = w.slice(i, i + 4);
             if (sub.length === 4) used2Syll.add(sub);
         }
     });
-    const consonants = ['', 'm', 's', 't', 'd', 'b', 'p', 'l'];
-    const vowels = ['a', 'e', 'i', 'o'];
     const allSylls = [];
     for (const c of consonants) for (const v of vowels) allSylls.push(c + v);
     const all2SyllWords = [];
@@ -707,11 +603,15 @@ function ilimiInit() {
     fetch(csvPath)
         .then(res => res.text())
         .then(text => {
-            vocabFromCSV = parseCSV(text);
+            const parsed = parseCSV(text);
+            vocab = parsed
+            // Avoid duplicates on initial load
+            // const existingWords = new Set(vocab.map(entry => (entry.word || '').trim().toLowerCase()));
+            // const newEntries = parsed.filter(entry => !existingWords.has((entry.word || '').trim().toLowerCase()));
+            // vocab = vocab.concat(newEntries);
             renderVocabList();
         });
     attachTooltipEvents();
-    attachSyllableClickEvents();
 }
 
 document.addEventListener('DOMContentLoaded', ilimiInit);
