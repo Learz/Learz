@@ -1,4 +1,3 @@
-
 // Pure CSV utilities for import/export. No UI or app state logic here!
 
 /**
@@ -43,7 +42,8 @@ export function vocabArrayToCSV(vocabArray) {
         const key = (entry.word || '').trim().toLowerCase();
         if (key && !seen.has(key)) {
             seen.add(key);
-            deduped.push(entry);
+            // Only keep word and meaning fields for CSV
+            deduped.push({ word: entry.word, meaning: entry.meaning });
         }
     }
     let csv = 'word,meaning\n';

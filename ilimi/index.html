@@ -13,9 +13,29 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
   <link rel="stylesheet" href="main.css">
   <script type="module" src="main.js"></script>
+  <script src="localLLM.js"></script>
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <!-- Firebase Auth SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <!-- Firebase Firestore SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
 </head>
 
 <body>
+  <div id="auth-section" style="margin-bottom:1.5em; display:none;">
+    <div id="user-info" style="display:none;">
+      <span id="user-email"></span>
+      <button id="sign-out-btn">Sign Out</button>
+    </div>
+    <form id="sign-in-form" style="display:flex;flex-direction:column;gap:0.5em;align-items:stretch;">
+      <input type="email" id="email" placeholder="Email" required style="padding:0.3em;width:200px;" />
+      <input type="password" id="password" placeholder="Password" required style="padding:0.3em;width:200px;" />
+      <button type="submit" style="width:fit-content;">Sign In</button>
+      <span id="auth-msg" style="color:#b00;"></span>
+    </form>
+  </div>
   <h1>Ilimi Language Overview</h1>
 
   <p class="intro">
@@ -40,9 +60,6 @@
     <br /><br />
     There is still much to explore in this language, and it is a work in progress. Letter and syllables meanings are
     still being refined, and entirely new letters could be introduced in the future.
-    <br />
-    If you have suggestions or ideas for new words, please feel free to send me your creations by using the "Export
-    Vocabulary to CSV" feature!
   </p>
 
   <h2>Base Meaning Table</h2>
@@ -140,6 +157,14 @@
           <div class="add-word-input-col">
             <label for="new-meaning">Meaning:</label>
             <input id="new-meaning" name="new-meaning" type="text" maxlength="80" required />
+          </div>
+          <div style="margin:0.5em 0 0.75em 0;">
+            <button id="generate-reading-btn" type="button" title="Generate reading from meaning">
+              <span class="material-symbols-outlined">auto_mode</span>
+            </button>
+            <div id="ai-reading-result"
+              style="display:inline-block;vertical-align: top; margin:0.5em 0 0 0; font-style:italic; color:#555;">
+            </div>
           </div>
           <div class="add-word-btn-col">
             <button id="add-word-btn" type="submit">Add Word</button>

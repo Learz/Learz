@@ -1,5 +1,13 @@
 import { parseCSV, vocabArrayToCSV } from './csv_utils.js';
 
+// Helper to generate UUID v4
+function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 // --- Add Word Section Logic ---
 let vocab = [];
 const csvPath = "default_vocab.csv";
@@ -167,7 +175,23 @@ function setupAddWordSection() {
                 addWordMsg.style.color = '#b00';
                 return;
             }
-            vocab.push({ word, meaning });
+            // Save to Firestore
+            let newId = undefined;
+            if (window.firebase && firebase.firestore) {
+                try {
+                    newId = uuidv4();
+                    await firebase.firestore().collection('vocab').doc(newId).set({ word, meaning });
+                    // Also update the dictionary document
+                    await firebase.firestore().collection('dictionary').doc('dictionary').update({
+                        words: firebase.firestore.FieldValue.arrayUnion({ word, meaning })
+                    });
+                } catch (err) {
+                    addWordMsg.textContent = 'Failed to save to Firestore: ' + err.message;
+                    addWordMsg.style.color = '#b00';
+                    return;
+                }
+            }
+            vocab.push({ id: newId, word, meaning });
             renderVocabList();
             // If fileHandle is set, auto-save to file
             if (typeof fileHandle !== 'undefined' && fileHandle) {
@@ -246,18 +270,32 @@ function setupCSVButtons() {
                 // Import vocab from CSV file
                 const file = importInput.files[0];
                 const reader = new FileReader();
-                reader.onload = function (e) {
+                reader.onload = async function (e) {
                     const text = e.target.result;
                     try {
                         const parsed = parseCSV(text);
-                        vocab = parsed
-                        // Append imported CSV entries to vocab, avoiding duplicates
-                        // const importedWords = new Set(parsed.map(entry => (entry.word || '').trim().toLowerCase()));
-                        // const existingWords = new Set(vocab.map(entry => (entry.word || '').trim().toLowerCase()));
-                        // const newEntries = parsed.filter(entry => !existingWords.has((entry.word || '').trim().toLowerCase()));
-                        // vocab = vocab.concat(newEntries);
+                        // Assign a UUID to each entry for Firestore, but do not include in CSV
+                        vocab = parsed.map(entry => ({ ...entry }));
                         renderVocabList();
                         showMsg('Vocabulary loaded from CSV!', true);
+                        // Add entries to Firestore if available
+                        if (window.firebase && firebase.firestore) {
+                            const db = firebase.firestore();
+                            for (const entry of parsed) {
+                                if (entry.word && entry.meaning) {
+                                    const id = uuidv4();
+                                    try {
+                                        await db.collection('vocab').doc(id).set({ word: entry.word, meaning: entry.meaning });
+                                        // Also update the dictionary document
+                                        await firebase.firestore().collection('dictionary').doc('dictionary').update({
+                                            words: firebase.firestore.FieldValue.arrayUnion({ word: entry.word, meaning: entry.meaning })
+                                        });
+                                    } catch (err) {
+                                        console.error('Failed to add entry to Firestore:', entry, err);
+                                    }
+                                }
+                            }
+                        }
                     } catch (err) {
                         showMsg('Failed to load CSV: ' + err.message, false);
                     }
@@ -389,6 +427,22 @@ function renderVocabList() {
         btn.addEventListener('click', async function (e) {
             const idx = parseInt(btn.getAttribute('data-idx'));
             if (!isNaN(idx)) {
+                const idToDelete = vocab[idx].id;
+                const wordToDelete = vocab[idx].word;
+                const meaningToDelete = vocab[idx].meaning;
+                // Delete from Firestore
+                if (window.firebase && firebase.firestore && idToDelete) {
+                    try {
+                        await firebase.firestore().collection('vocab').doc(idToDelete).delete();
+                        // Also update the dictionary document
+                        await firebase.firestore().collection('dictionary').doc('dictionary').update({
+                            words: firebase.firestore.FieldValue.arrayRemove({ word: wordToDelete, meaning: meaningToDelete })
+                        });
+                    } catch (err) {
+                        showMsg('Failed to delete from Firestore: ' + err.message, false);
+                        return;
+                    }
+                }
                 vocab.splice(idx, 1);
                 renderVocabList();
                 // Save to file if fileHandle is set (Open/Edit CSV mode)
@@ -408,6 +462,12 @@ function renderVocabList() {
     });
     attachTooltipEvents();
     updateMeaningTable();
+    // Ensure delete buttons are hidden if logged out
+    if (window.firebase && firebase.auth) {
+        updateAuthUI(!!firebase.auth().currentUser);
+    } else {
+        updateAuthUI(false);
+    }
 }
 
 function updateMeaningTable() {
@@ -444,6 +504,12 @@ function updateMeaningTable() {
                             } else {
                                 showWordsWithSyllable(syllable);
                                 if (listDiv) listDiv.setAttribute('data-syllable', syllable);
+                                // Scroll to syllable-words-list if on mobile
+                                if (listDiv && window.innerWidth <= 800) {
+                                    setTimeout(() => {
+                                        listDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }, 50);
+                                }
                             }
                         });
                     }
@@ -503,53 +569,62 @@ function showWordsWithSyllable(syllable) {
             if (sub.length === 4) used2Syll.add(sub);
         }
     });
-    const allSylls = [];
-    for (const c of consonants) for (const v of vowels) allSylls.push(c + v);
-    const all2SyllWords = [];
-    for (const s1 of allSylls) {
-        for (const s2 of allSylls) {
-            if (s1.length === 2 && s2.length === 2) {
-                all2SyllWords.push(s1 + s2);
+
+    let unusedSection = '';
+    const isLoggedIn = window.firebase && firebase.auth && firebase.auth().currentUser;
+    if (isLoggedIn) {
+        const allSylls = [];
+        for (const c of consonants) for (const v of vowels) allSylls.push(c + v);
+        const all2SyllWords = [];
+        for (const s1 of allSylls) {
+            for (const s2 of allSylls) {
+                if (s1.length === 2 && s2.length === 2) {
+                    all2SyllWords.push(s1 + s2);
+                }
             }
         }
-    }
-    const unused = all2SyllWords.filter(w => !used2Syll.has(w) && w.includes(syllable));
-    function getSyllableMeanings(word) {
-        const s1 = word.slice(0, 2);
-        const s2 = word.slice(2, 4);
-        const m1 = meanings[s1] ? `${s1}: ${meanings[s1]}` : `${s1}: ?`;
-        const m2 = meanings[s2] ? `${s2}: ${meanings[s2]}` : `${s2}: ?`;
-        return `(${m1}, ${m2})`;
-    }
-    let unusedSection = '';
-    if (unused.length > 0) {
-        unusedSection = `<div style="margin-top:1.5em;"><strong>Unused 2-syllable words containing "<span style=\"color:#4b0082\">${syllable}</span>":</strong><ul style="margin:0.5em 0 0 1.5em;">${unused.map(s => `<li><code class=\"unused-word\" style=\"cursor:pointer;text-decoration:underline dotted #4b0082;\" title=\"Add this word\">${s}</code> <span style=\"color:#666;font-size:0.95em;\">${getSyllableMeanings(s)}</span></li>`).join('')}</ul></div>`;
-    } else {
-        unusedSection = `<div style=\"margin-top:1.5em;\"><strong>No unused 2-syllable words containing \"<span style=\\"color:#4b0082\\">${syllable}</span>\".</strong></div>`;
-    }
-    setTimeout(() => {
-        document.querySelectorAll('.unused-word').forEach(el => {
-            el.addEventListener('click', function (e) {
-                const section = document.getElementById('add-word-section');
-                // Support both CTA and legacy toggle
-                const cta = document.getElementById('add-word-cta');
-                const toggleBtn = document.getElementById('add-word-toggle');
-                if (section.classList.contains('add-word-minimized')) {
-                    if (cta) {
-                        cta.click();
-                    } else if (toggleBtn) {
-                        toggleBtn.click();
+        const unused = all2SyllWords.filter(w => !used2Syll.has(w) && w.includes(syllable));
+        function getSyllableMeanings(word) {
+            const s1 = word.slice(0, 2);
+            const s2 = word.slice(2, 4);
+            const m1 = meanings[s1] ? `${s1}: ${meanings[s1]}` : `${s1}: ?`;
+            const m2 = meanings[s2] ? `${s2}: ${meanings[s2]}` : `${s2}: ?`;
+            return `(${m1}, ${m2})`;
+        }
+
+        if (unused.length > 0) {
+            unusedSection = `<div style="margin-top:1.5em;"><strong>Unused 2-syllable words containing "<span style=\"color:#4b0082\">${syllable}</span>":</strong><ul style="margin:0.5em 0 0 1.5em;">${unused.map(s => `<li><code class=\"unused-word\" style=\"cursor:pointer;text-decoration:underline dotted #4b0082;\" title=\"Add this word\">${s}</code> <span style=\"color:#666;font-size:0.95em;\">${getSyllableMeanings(s)}</span></li>`).join('')}</ul></div>`;
+        } else {
+            unusedSection = `<div style=\"margin-top:1.5em;\"><strong>No unused 2-syllable words containing \"<span style=\\"color:#4b0082\\">${syllable}</span>\".</strong></div>`;
+        }
+
+        setTimeout(() => {
+            // Only allow clicking unused words if logged in
+            document.querySelectorAll('.unused-word').forEach(el => {
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', function (e) {
+                    const section = document.getElementById('add-word-section');
+                    // Support both CTA and legacy toggle
+                    const cta = document.getElementById('add-word-cta');
+                    const toggleBtn = document.getElementById('add-word-toggle');
+                    if (section.classList.contains('add-word-minimized')) {
+                        if (cta) {
+                            cta.click();
+                        } else if (toggleBtn) {
+                            toggleBtn.click();
+                        }
                     }
-                }
-                const wordInput = document.getElementById('new-word');
-                if (wordInput) {
-                    wordInput.value = this.textContent;
-                    wordInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    wordInput.focus();
-                }
+                    const wordInput = document.getElementById('new-word');
+                    if (wordInput) {
+                        wordInput.value = this.textContent;
+                        wordInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        wordInput.focus();
+                    }
+                });
             });
-        });
-    }, 0);
+        }, 0);
+    }
+
     const closeBtn = `<button id="close-syllable-list" style="float:right;background:none;border:none;font-size:1.2em;cursor:pointer;color:#4b0082;" title="Close">&times;</button>`;
     if (matches.length > 0) {
         listDiv.innerHTML = `<div style="margin:1em 0 1em 0;padding:1em;background:#f9f6ff;border:1px solid #e6e6fa;border-radius:6px;position:relative;">
@@ -594,24 +669,102 @@ function setupAddWordCTA() {
     });
 }
 
+// --- Auth-based UI controls ---
+function updateAuthUI(isLoggedIn) {
+    const csvControls = document.querySelector('.csv-controls');
+    if (csvControls) csvControls.style.display = isLoggedIn ? '' : 'none';
+    // Hide/show add-word-cta
+    const cta = document.getElementById('add-word-cta');
+    if (cta) cta.style.display = isLoggedIn ? '' : 'none';
+    // Hide/show all delete buttons
+    document.querySelectorAll('.delete-word-btn').forEach(btn => {
+        btn.style.display = isLoggedIn ? '' : 'none';
+    });
+}
+
 // --- Initialization ---
 function ilimiInit() {
     setupTooltip();
     setupAddWordSection();
     setupCSVButtons();
     setupAddWordCTA();
-    fetch(csvPath)
-        .then(res => res.text())
-        .then(text => {
-            const parsed = parseCSV(text);
-            vocab = parsed
-            // Avoid duplicates on initial load
-            // const existingWords = new Set(vocab.map(entry => (entry.word || '').trim().toLowerCase()));
-            // const newEntries = parsed.filter(entry => !existingWords.has((entry.word || '').trim().toLowerCase()));
-            // vocab = vocab.concat(newEntries);
-            renderVocabList();
+
+    // Listen for auth state changes and load vocab accordingly
+    function loadVocab(isLoggedIn) {
+        if (isLoggedIn && window.firebase && firebase.firestore) {
+            const db = firebase.firestore();
+            db.collection('vocab').get().then(snapshot => {
+                vocab = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    // Ensure id is present
+                    return { id: doc.id, word: data.word, meaning: data.meaning };
+                });
+                renderVocabList();
+            }).catch(err => {
+                console.error('Failed to load vocab from Firestore:', err);
+            });
+        } else if (window.firebase && firebase.firestore) {
+            // Not logged in: try to load from dictionary>dictionary.words
+            const db = firebase.firestore();
+            db.collection('dictionary').doc('dictionary').get().then(docSnap => {
+                if (docSnap.exists && Array.isArray(docSnap.data().words)) {
+                    vocab = docSnap.data().words.map(entry => ({ word: entry.word, meaning: entry.meaning }));
+                    renderVocabList();
+                } else {
+                    // fallback: load from CSV
+                    fetch(csvPath)
+                        .then(res => res.text())
+                        .then(text => {
+                            const parsed = parseCSV(text);
+                            vocab = parsed;
+                            renderVocabList();
+                        });
+                }
+            }).catch(() => {
+                // fallback: load from CSV
+                fetch(csvPath)
+                    .then(res => res.text())
+                    .then(text => {
+                        const parsed = parseCSV(text);
+                        vocab = parsed;
+                        renderVocabList();
+                    });
+            });
+        } else {
+            // fallback: load from CSV if Firestore not available
+            fetch(csvPath)
+                .then(res => res.text())
+                .then(text => {
+                    const parsed = parseCSV(text);
+                    vocab = parsed;
+                    renderVocabList();
+                });
+        }
+    }
+
+    if (window.firebase && firebase.auth) {
+        firebase.auth().onAuthStateChanged(function (user) {
+            loadVocab(!!user);
+            updateAuthUI(!!user);
         });
+    } else {
+        loadVocab(false);
+        updateAuthUI(false);
+    }
     attachTooltipEvents();
 }
+
+// Show auth-section when L is pressed
+document.addEventListener('keydown', function (e) {
+    // Ignore if focus is in an input, textarea, or contenteditable
+    const active = document.activeElement;
+    if ((active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable))) return;
+    if (e.key === 'l' || e.key === 'L') {
+        const authSection = document.getElementById('auth-section');
+        if (authSection) {
+            authSection.style.display = (authSection.style.display === 'none' || authSection.style.display === '') ? 'block' : 'none';
+        }
+    }
+});
 
 document.addEventListener('DOMContentLoaded', ilimiInit);

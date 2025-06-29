@@ -110,25 +110,9 @@
     color: #b00;
 }
 
-#Add Word Panel Layout and Form .add-word-input-col {
-    flex: 1 1 220px;
-    min-width: 180px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    margin-bottom: 0.5em;
-}
-
 .add-word-btn-col {
     flex: 0 0 auto;
     align-self: flex-end;
-}
-
-#add-word-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1em 1.5em;
-    align-items: flex-start;
 }
 
 #add-word-section #syllable-annotation {
@@ -430,6 +414,10 @@ label[for="import-csv-input"] {
 .unused-word {
     cursor: pointer;
     text-decoration: underline dotted #4b0082;
+}
+
+.add-word-input-col {
+    margin: 0.5em 0 0 0;
 }
 
 #close-syllable-list {
